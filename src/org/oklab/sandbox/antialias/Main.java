@@ -20,7 +20,7 @@ public class Main extends JFrame {
 		
 		setTitle(title);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setPreferredSize(new Dimension(1280, 720));
+		setPreferredSize(new Dimension(600, 600));
 		
 		getContentPane().add(myComponent);
 		

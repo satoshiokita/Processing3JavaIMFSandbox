@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JComponent;
@@ -29,11 +30,46 @@ public class MyComponent extends JComponent {
 	
 	// understand baseline, decent, accent.
 	private void test3(Graphics g) {
-		Graphics2D g2d = (Graphics2D)g;
-		Font font = new Font("MS　ゴシック", Font.PLAIN, 12); // MS Gothic
-		FontRenderContext frc = g2d.getFontRenderContext();
-		TextLayout layout = new TextLayout("helloこんにちは", font, frc);
-		layout.draw(g2d, 0, 0);
+		int w = getWidth();
+		int h = getHeight();
+		float y = 0;
+		for (int i = 0; i < 2; i++) {
+			Graphics2D g2d = (Graphics2D)g;
+			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			
+			Font font = new Font(Font.SERIF, Font.ITALIC, 32); // MS Gothic
+			FontRenderContext frc = g2d.getFontRenderContext();
+			TextLayout layout = new TextLayout("あいうえおÄÖÜhelloabcdefghiABCDEFGHI", font, frc);
+			System.out.println("getLeading=" + layout.getLeading());
+			System.out.println("getAscent=" + layout.getAscent());
+			System.out.println("getBaseline=" + layout.getBaseline());
+			
+
+			// Boundsの右上座標ではなく、ベースラインを基準に描画するため、アセント分下に移動させる。
+			y += layout.getAscent();
+			
+			g2d.setPaint(Color.BLACK);
+			layout.draw(g2d, 0, y);
+			
+			// レディング
+			float leading = y + layout.getDescent() + layout.getLeading();
+			g2d.setPaint(Color.PINK);
+			g2d.draw(new Line2D.Float(0, leading, w, leading));
+			// アセント
+			float ascent = y - layout.getAscent();
+			g2d.setPaint(Color.BLUE);
+			g2d.draw(new Line2D.Float(0, ascent, w, ascent));
+			// ディセント
+			float descent = y + layout.getDescent(); 
+			g2d.setPaint(Color.CYAN);
+			g2d.draw(new Line2D.Float(0, descent, w, descent));					
+			// ベースライン
+			g2d.setPaint(Color.RED);
+			g2d.draw(new Line2D.Float(0, y, w, y));
+			
+			y += layout.getDescent() + layout.getLeading();
+		}
 	}
 
 	// print font info
